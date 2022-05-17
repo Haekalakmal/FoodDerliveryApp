@@ -13,7 +13,7 @@ namespace UserService.GraphQL
 {
     public class Query
     {
-        public IQueryable<Food> GetProducts([Service] FoodDeliveryContext context) =>
+        public IQueryable<Food> GetFoods([Service] FoodDeliveryContext context) =>
             context.Foods;
 
         [Authorize(Roles = new[] { "ADMIN" })] // dapat diakses kalau sudah login
@@ -26,27 +26,41 @@ namespace UserService.GraphQL
                 Username = p.Username
             });
 
-        [Authorize] 
-        public IQueryable<Profile> GetProfiles([Service] FoodDeliveryContext context, ClaimsPrincipal claimsPrincipal)
+        [Authorize]
+        public IQueryable<Profile> GetProfilesbyToken([Service] FoodDeliveryContext context, ClaimsPrincipal claimsPrincipal)
         {
             var userName = claimsPrincipal.Identity.Name;
-
-            // check admin role ?
-            var adminRole = claimsPrincipal.Claims.Where(o => o.Type == ClaimTypes.Role && o.Value == "ADMIN").FirstOrDefault();
             var user = context.Users.Where(o => o.Username == userName).FirstOrDefault();
             if (user != null)
             {
-                if (adminRole!=null)                    
-                {                    
-                    return context.Profiles;
-                }
-                var profiles = context.Profiles.Where(o => o.UserId == user.Id);                
+                var profiles = context.Profiles.Where(o => o.UserId == user.Id);
                 return profiles.AsQueryable();
             }
-
-
             return new List<Profile>().AsQueryable();
         }
+
+        //[Authorize]
+        //public IQueryable<Profile> GetProfiles([Service] FoodDeliveryContext context, ClaimsPrincipal claimsPrincipal)
+        //{
+        //    var userName = claimsPrincipal.Identity.Name;
+
+        //    // check admin role ?
+        //    var adminRole = claimsPrincipal.Claims.Where(o => o.Type == ClaimTypes.Role && o.Value == "ADMIN").FirstOrDefault();
+        //    var user = context.Users.Where(o => o.Username == userName).FirstOrDefault();
+        //    if (user != null)
+        //    {
+        //        if (adminRole != null)
+        //        {
+        //            return context.Profiles;
+        //        }
+        //        var profiles = context.Profiles.Where(o => o.UserId == user.Id);
+        //        return profiles.AsQueryable();
+        //    }
+
+
+        //    return new List<Profile>().AsQueryable();
+        //}
+
         //[Authorize]
         //public IQueryable<Order> GetOrders([Service] ProductQLContext context, ClaimsPrincipal claimsPrincipal)
         //{

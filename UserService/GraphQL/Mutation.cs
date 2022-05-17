@@ -152,7 +152,27 @@ namespace UserService.GraphQL
 
             return await Task.FromResult(user);
         }
+        [Authorize]
 
+        public async Task<Profile> AddProfileAsync(
+            ProfilesInput input,
+            [Service] FoodDeliveryContext context)
+        {
+
+            var profile = new Profile
+            {
+                UserId = input.UserId,
+                Name = input.Name,
+                Address = input.Address,
+                City = input.City,
+                Phone = input.Phone
+            };
+
+            var ret = context.Profiles.Add(profile);
+            await context.SaveChangesAsync();
+            return ret.Entity;
+
+        }
         //[Authorize]
         //public async Task<Order> AddOrderAsync(
         //    Order input,

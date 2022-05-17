@@ -15,7 +15,7 @@ namespace FoodService.GraphQL
     public class Query
     {
         [Authorize(Roles = new[] { "MANAGER" })]
-        public IQueryable<Food> GetProducts([Service] FoodDeliveryContext context) =>
+        public IQueryable<Food> GetFood([Service] FoodDeliveryContext context) =>
             context.Foods;
 
     
