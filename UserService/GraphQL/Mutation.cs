@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using UserService.GraphQL;
 using UserService.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserService.GraphQL
 {
@@ -125,13 +126,29 @@ namespace UserService.GraphQL
             int id,
             [Service] FoodDeliveryContext context)
         {
-            var user = context.Users.Where(o => o.Id == id).FirstOrDefault();
+            var user = context.Users.Where(o => o.Id == id).Include(o => o.UserRoles).FirstOrDefault();
             if (user != null)
             {
                 context.Users.Remove(user);
                 await context.SaveChangesAsync();
             }
 
+
+            return await Task.FromResult(user);
+        }
+        [Authorize]
+        public async Task<User> ChangePasswordAsync(
+            ChangePassword input,
+            [Service] FoodDeliveryContext context)
+        {
+            var user = context.Users.Where(o => o.Id == input.Id).FirstOrDefault();
+            if (user != null)
+            {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(input.Password);
+
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+            }
 
             return await Task.FromResult(user);
         }
