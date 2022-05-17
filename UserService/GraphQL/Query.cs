@@ -16,7 +16,7 @@ namespace UserService.GraphQL
         public IQueryable<Food> GetProducts([Service] FoodDeliveryContext context) =>
             context.Foods;
 
-        [Authorize] // dapat diakses kalau sudah login
+        [Authorize(Roles = new[] { "ADMIN" })] // dapat diakses kalau sudah login
         public IQueryable<UserData> GetUsers([Service] FoodDeliveryContext context) =>
             context.Users.Select(p => new UserData()
             {

@@ -34,7 +34,15 @@ namespace UserService.GraphQL
                 Username = input.UserName,
                 Password = BCrypt.Net.BCrypt.HashPassword(input.Password) // encrypt password
             };
-
+            var memberRole = context.Roles.Where(m => m.Name == "BUYER").FirstOrDefault();
+            if (memberRole == null)
+                throw new Exception("Invalid Role");
+            var userRole = new UserRole
+            {
+                RoleId = memberRole.Id,
+                UserId = newUser.Id
+            };
+            newUser.UserRoles.Add(userRole);
             // EF
             var ret = context.Users.Add(newUser);
             await context.SaveChangesAsync();
@@ -67,7 +75,7 @@ namespace UserService.GraphQL
                 var claims = new List<Claim>();
                 claims.Add(new Claim(ClaimTypes.Name, user.Username));
 
-                var userRoles = context.UserRoles.Where(o => o.Id == user.Id).ToList();
+                var userRoles = context.UserRoles.Where(o => o.UserId == user.Id).ToList();
                 foreach (var userRole in userRoles)
                 {
                     var role = context.Roles.Where(o=>o.Id == userRole.RoleId).FirstOrDefault();
@@ -94,6 +102,39 @@ namespace UserService.GraphQL
 
             return await Task.FromResult(new UserToken(null, null, Message: "Username or password was invalid"));
         }
+        [Authorize(Roles = new[] { "ADMIN" })]
+        public async Task<User> UpdateUserAsync(
+            UserData input,
+            [Service] FoodDeliveryContext context)
+        {
+            var user = context.Users.Where(o => o.Username == input.Username).FirstOrDefault();
+            if (user != null)
+            {
+                user.Username = input.Username;
+                user.Email = input.Email;
+
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+            }
+
+
+            return await Task.FromResult(user);
+        }
+        [Authorize(Roles = new[] { "ADMIN" })]
+        public async Task<User> DeleteUserByIdAsync(
+            int id,
+            [Service] FoodDeliveryContext context)
+        {
+            var user = context.Users.Where(o => o.Id == id).FirstOrDefault();
+            if (user != null)
+            {
+                context.Users.Remove(user);
+                await context.SaveChangesAsync();
+            }
+
+
+            return await Task.FromResult(user);
+        }
 
         //[Authorize]
         //public async Task<Order> AddOrderAsync(
@@ -115,7 +156,7 @@ namespace UserService.GraphQL
         //                Code = Guid.NewGuid().ToString(), // generate random chars using GUID
         //                UserId = user.Id
         //            };
-                                     
+
         //            foreach (var item in input.Details)
         //            {
         //                var detial = new OrderDetail

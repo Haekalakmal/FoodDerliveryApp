@@ -20,7 +20,7 @@ namespace FoodService.GraphQL
 {
     public class Mutation
     {
-        [Authorize(Roles = new[] { "MANAGER" })]
+        [Authorize(Roles = new[] { "ADMIN" })]
         public async Task<Food> AddProductAsync(
             FoodInput input,
             [Service] FoodDeliveryContext context)
@@ -48,7 +48,7 @@ namespace FoodService.GraphQL
 
             return await Task.FromResult(product);
         }
-        [Authorize(Roles = new[] { "MANAGER" })]
+        [Authorize(Roles = new[] { "ADMIN" })]
         public async Task<Food> UpdateProductAsync(
             FoodInput input,
             [Service] FoodDeliveryContext context)
@@ -68,7 +68,7 @@ namespace FoodService.GraphQL
             return await Task.FromResult(food);
         }
 
-        [Authorize(Roles = new[] { "MANAGER" })]
+        [Authorize(Roles = new[] { "ADMIN" })]
         public async Task<Food> DeleteProductByIdAsync(
             int id,
             [Service] FoodDeliveryContext context)
