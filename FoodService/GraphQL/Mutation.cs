@@ -68,7 +68,7 @@ namespace FoodService.GraphQL
             return await Task.FromResult(food);
         }
 
-        [Authorize(Roles = new[] { "MANAGER" })]
+        /*[Authorize(Roles = new[] { "MANAGER" })]
         public async Task<Food> DeleteFoodByIdAsync(
             int id,
             [Service] FoodDeliveryContext context)
@@ -82,7 +82,7 @@ namespace FoodService.GraphQL
 
 
             return await Task.FromResult(food);
-        }
+        }*/
 
         
 

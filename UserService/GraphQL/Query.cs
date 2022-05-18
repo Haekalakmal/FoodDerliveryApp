@@ -13,8 +13,6 @@ namespace UserService.GraphQL
 {
     public class Query
     {
-        public IQueryable<Food> GetFoods([Service] FoodDeliveryContext context) =>
-            context.Foods;
 
         [Authorize(Roles = new[] { "ADMIN" })] // dapat diakses kalau sudah login
         public IQueryable<UserData> GetUsers([Service] FoodDeliveryContext context) =>
@@ -27,7 +25,8 @@ namespace UserService.GraphQL
             });
 
         [Authorize]
-        public IQueryable<Profile> GetProfilesbyToken([Service] FoodDeliveryContext context, ClaimsPrincipal claimsPrincipal)
+        public IQueryable<Profile> GetProfilesbyToken([Service] 
+        FoodDeliveryContext context, ClaimsPrincipal claimsPrincipal)
         {
             var userName = claimsPrincipal.Identity.Name;
             var user = context.Users.Where(o => o.Username == userName).FirstOrDefault();
