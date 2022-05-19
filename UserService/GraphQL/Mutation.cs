@@ -173,56 +173,52 @@ namespace UserService.GraphQL
             return ret.Entity;
 
         }
-        //[Authorize]
-        //public async Task<Order> AddOrderAsync(
-        //    Order input,
-        //    ClaimsPrincipal claimsPrincipal,
-        //    [Service] ProductQLContext context)
-        //{
-        //    using var transaction = context.Database.BeginTransaction();
-        //    var userName = claimsPrincipal.Identity.Name;
+        [Authorize(Roles = new[] { "MANAGER" })]
+        public async Task<Courier> AddCourierAsync(
+            CourierInput input,
+            [Service] FoodDeliveryContext context)
+        {
+            var courier = new Courier
+            {
+                CourierName = input.CourierName,
+                Phone = input.Phone
+            };
 
-        //    try
-        //    {
-        //        var user = context.Users.Where(o => o.Username == userName).FirstOrDefault();
-        //        if (user != null)
-        //        {
-        //            // EF
-        //            var order = new Order
-        //            {
-        //                Code = Guid.NewGuid().ToString(), // generate random chars using GUID
-        //                UserId = user.Id
-        //            };
+            var ret = context.Couriers.Add(courier);
+            await context.SaveChangesAsync();
+            return ret.Entity;
+        }
+        [Authorize(Roles = new[] { "MANAGER" })]
+        public async Task<Courier> UpdateCourierAsync(
+            CourierInput input,
+            [Service] FoodDeliveryContext context)
+        {
+            var kurir = context.Couriers.Where(o => o.CourierName == input.CourierName).FirstOrDefault();
+            if (kurir != null)
+            {
+                kurir.CourierName = input.CourierName;
+                kurir.Phone = input.Phone;
 
-        //            foreach (var item in input.Details)
-        //            {
-        //                var detial = new OrderDetail
-        //                {
-        //                    OrderId = order.Id,
-        //                    ProductId = item.ProductId,
-        //                    Quantity = item.Quantity
-        //                };
-        //                order.OrderDetails.Add(detial);            
-        //            }
-        //            context.Orders.Add(order);
-        //            context.SaveChanges();
-        //            await transaction.CommitAsync();
+                context.Couriers.Update(kurir);
+                await context.SaveChangesAsync();
+            }
+            return await Task.FromResult(kurir);
+        }
 
-        //            input.Id = order.Id;
-        //            input.Code = order.Code;
-        //        }
-        //        else
-        //            throw new Exception("user was not found");
-        //    }
-        //    catch(Exception err)
-        //    {
-        //        transaction.Rollback();
-        //    }
+        [Authorize(Roles = new[] { "MANAGER" })]
+        public async Task<Courier> DeleteCourierByIdAsync(
+            int id,
+            [Service] FoodDeliveryContext context)
+        {
+            var kurir = context.Couriers.Where(o => o.Id == id).FirstOrDefault();
+            if (kurir != null)
+            {
+                context.Couriers.Remove(kurir);
+                await context.SaveChangesAsync();
+            }
 
-
-
-        //    return input;
-        //}
+            return await Task.FromResult(kurir);
+        }
 
     }
 }

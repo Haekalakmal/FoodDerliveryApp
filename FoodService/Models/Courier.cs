@@ -12,7 +12,7 @@ namespace FoodService.Models
 
         public int Id { get; set; }
         public string CourierName { get; set; } = null!;
-        public int Phone { get; set; }
+        public string Phone { get; set; } = null!;
 
         public virtual ICollection<Order> Orders { get; set; }
     }

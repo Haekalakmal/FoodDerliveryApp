@@ -63,8 +63,6 @@ namespace FoodService.GraphQL
                 context.Foods.Update(food);
                 await context.SaveChangesAsync();
             }
-
-
             return await Task.FromResult(food);
         }
 

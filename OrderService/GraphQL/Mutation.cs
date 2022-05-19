@@ -70,7 +70,7 @@ namespace OrderService.GraphQL
         }
 
         [Authorize(Roles = new[] { "MANAGER" })]
-        public async Task<OrderData> UpdateOrderAsync(
+        public async Task<Order> UpdateOrderAsync(
             OrderData input,
             [Service] FoodDeliveryContext context)
         {
@@ -85,7 +85,7 @@ namespace OrderService.GraphQL
                 context.Orders.Update(user);
                 await context.SaveChangesAsync();
             }
-            return input;
+            return await Task.FromResult(user);
         }
         [Authorize(Roles = new[] { "MANAGER" })]
         public async Task<Order> DeleteOrderByIdAsync(
