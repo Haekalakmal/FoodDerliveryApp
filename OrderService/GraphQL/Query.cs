@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using OrderService.Models;
 
 
-namespace OrderServices.GraphQL
+namespace OrderService.GraphQL
 {
     public class Query
     {

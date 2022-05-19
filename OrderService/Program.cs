@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Models;
 using OrderService.GraphQL;
 using OrderService.Models;
-using OrderServices.GraphQL;
+using OrderService.GraphQL;
 
 var builder = WebApplication.CreateBuilder(args);
 
