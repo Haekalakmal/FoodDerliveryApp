@@ -13,7 +13,7 @@ namespace UserService.Models
         public int Id { get; set; }
         public string CourierName { get; set; } = null!;
         public string Phone { get; set; } = null!;
-        public bool? Availibility { get; set; }
+        public bool Availibility { get; set; }
         public int UserId { get; set; }
 
         public virtual User User { get; set; } = null!;

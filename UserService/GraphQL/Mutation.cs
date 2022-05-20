@@ -1,17 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using HotChocolate;
-using System;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
 using HotChocolate.AspNetCore.Authorization;
 using System.Security.Claims;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using UserService.GraphQL;
 using UserService.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -222,7 +214,8 @@ namespace UserService.GraphQL
             {
                 CourierName = input.CourierName,
                 Phone = input.Phone,
-                UserId = input.UserId
+                UserId = input.UserId,
+                Availibility = input.Availibility
             };
 
             var ret = context.Couriers.Add(kurir);
@@ -230,6 +223,8 @@ namespace UserService.GraphQL
 
             return ret.Entity;
         }
+
+        [Authorize(Roles = new[] { "MANAGER" })]
         public async Task<Courier> UpdateCourierAsync(
             CourierInput input,
             [Service] FoodDeliveryContext context)
@@ -247,6 +242,7 @@ namespace UserService.GraphQL
             return await Task.FromResult(kurir);
         }
 
+        [Authorize(Roles = new[] { "MANAGER" })]
         public async Task<User> DeleteCourierByIdAsync(
             int id,
             [Service] FoodDeliveryContext context)
@@ -260,7 +256,8 @@ namespace UserService.GraphQL
 
             return await Task.FromResult(user);
         }
-        //Delete CourierProfile
+
+        [Authorize(Roles = new[] { "MANAGER" })]
         public async Task<Courier> DeleteCourierProfileAsync(
             int id,
             [Service] FoodDeliveryContext context)

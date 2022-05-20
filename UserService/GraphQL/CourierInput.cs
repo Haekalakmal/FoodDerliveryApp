@@ -5,6 +5,7 @@
         int? Id,
         string CourierName,
         string Phone,
+        bool Availibility,
         int UserId
     );
 }

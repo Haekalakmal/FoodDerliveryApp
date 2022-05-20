@@ -1,18 +1,5 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using HotChocolate;
-using System;
-using Microsoft.Extensions.Options;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-
-using HotChocolate.AspNetCore.Authorization;
+﻿using HotChocolate.AspNetCore.Authorization;
 using System.Security.Claims;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using OrderService.Models;
 using OrderService.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,29 +19,36 @@ namespace OrderService.GraphQL
             try
             {
                 var user = context.Users.Where(o => o.Username == userName).FirstOrDefault();
+                var kurir = context.Couriers.Where(o => o.Id == input.CourierId).FirstOrDefault();
                 if (user != null)
                 {
-                    // EF
-                    var order = new Order
+                    if (kurir.Availibility == true)
                     {
-                        Code = Guid.NewGuid().ToString(), // generate random chars using GUID
-                        UserId = user.Id,
-                        CourierId = input.CourierId
-                    };
-                    foreach (var item in input.Details)
-                    {
-                        var detail = new OrderDetail
+                        // EF
+                        var order = new Order
                         {
-                            OrderId = order.Id,
-                            FoodId = item.FoodId,
-                            Quantity = item.Quantity
+                            Code = Guid.NewGuid().ToString(), // generate random chars using GUID
+                            UserId = user.Id,
+                            CourierId = input.CourierId
                         };
-                        order.OrderDetails.Add(detail);
-                    }
+                        foreach (var item in input.Details)
+                        {
+                            var detail = new OrderDetail
+                            {
+                                OrderId = order.Id,
+                                FoodId = item.FoodId,
+                                Quantity = item.Quantity
+                            };
+                            order.OrderDetails.Add(detail);
+                        }
 
-                    context.Orders.Add(order);
-                    context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                        context.Orders.Add(order);
+                        kurir.Availibility = false;
+                        context.Couriers.Update(kurir);
+
+                        context.SaveChanges();
+                        await transaction.CommitAsync();
+                    }
 
                     //input.Id = order.Id;
                     //input.Code = order.Code;
@@ -62,7 +56,7 @@ namespace OrderService.GraphQL
                 else
                     throw new Exception("user was not found");
             }
-            catch (Exception error)
+            catch (Exception err)
             {
                 transaction.Rollback();
             }
@@ -70,7 +64,7 @@ namespace OrderService.GraphQL
         }
 
         [Authorize(Roles = new[] { "MANAGER" })]
-        public async Task<Order> UpdateOrderAsync(
+        public async Task<OrderData> UpdateOrderAsync(
             OrderData input,
             [Service] FoodDeliveryContext context)
         {
@@ -85,7 +79,7 @@ namespace OrderService.GraphQL
                 context.Orders.Update(user);
                 await context.SaveChangesAsync();
             }
-            return await Task.FromResult(user);
+            return input;
         }
         [Authorize(Roles = new[] { "MANAGER" })]
         public async Task<Order> DeleteOrderByIdAsync(
@@ -99,6 +93,42 @@ namespace OrderService.GraphQL
                 await context.SaveChangesAsync();
             }
 
+            return await Task.FromResult(order);
+        }
+
+        [Authorize(Roles = new[] { "COURIER" })]
+        public async Task<TrackingOrder> AddTrackingAsync(
+            TrackingOrder input,
+            [Service] FoodDeliveryContext context)
+        {
+            var order = context.Orders.Where(o => o.Id == input.Id).FirstOrDefault();
+            if (order != null)
+            {
+                order.Id = input.Id;
+                order.Longitude = input.Longitude;
+                order.Latitude = input.Latitude;
+
+                context.Orders.Update(order);
+                context.SaveChanges();
+            }
+            return input;
+        }
+
+        [Authorize(Roles = new[] { "COURIER" })]
+        public async Task<Order> CompleteOrderAsync(
+            int id,
+            [Service] FoodDeliveryContext context)
+        {
+            var order = context.Orders.Where(o => o.Id == id).FirstOrDefault();
+            var kurir = context.Couriers.Where(o => o.Id == order.CourierId).FirstOrDefault();
+            if (order != null)
+            {
+                // EF
+                order.Id = id;
+                kurir.Availibility = true;
+                context.Couriers.Update(kurir);
+                context.SaveChanges();
+            }
             return await Task.FromResult(order);
         }
     }

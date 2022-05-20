@@ -1,12 +1,6 @@
-﻿using System.Linq;
-using HotChocolate;
-using HotChocolate.Types;
-using HotChocolate.AspNetCore.Authorization;
-
+﻿using HotChocolate.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
 using UserService.Models;
 
 namespace UserService.GraphQL
@@ -46,7 +40,6 @@ namespace UserService.GraphQL
             return kurirs.AsQueryable();
         }
 
-        [Authorize(Roles = new[] { "MANAGER" })]
         public IQueryable<Courier> GetCourierProfiles([Service] FoodDeliveryContext context) =>
             context.Couriers.Select(p => new Courier()
             {

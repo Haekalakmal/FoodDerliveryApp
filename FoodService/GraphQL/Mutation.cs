@@ -1,20 +1,6 @@
 ﻿using FoodService.Models;
-using System.Linq;
-using System.Threading.Tasks;
-using HotChocolate;
-using System;
-using Microsoft.Extensions.Options;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-
 using HotChocolate.AspNetCore.Authorization;
-using System.Security.Claims;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using FoodService.Models;
-using FoodService.GraphQL;
-using FoodService.Models;
+
 
 namespace FoodService.GraphQL
 {
