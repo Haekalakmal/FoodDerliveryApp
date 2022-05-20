@@ -47,6 +47,12 @@ namespace UserService.Models
                 entity.Property(e => e.Phone)
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Couriers)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Courier_User");
             });
 
             modelBuilder.Entity<Food>(entity =>
@@ -66,6 +72,14 @@ namespace UserService.Models
 
                 entity.Property(e => e.Code)
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Latitude)
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Longitude)
+                    .HasMaxLength(200)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.Courier)

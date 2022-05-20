@@ -4,6 +4,7 @@
     (
         int? Id,
         string CourierName,
-        string Phone
+        string Phone,
+        int UserId
     );
 }
