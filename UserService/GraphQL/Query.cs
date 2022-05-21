@@ -39,7 +39,7 @@ namespace UserService.GraphQL
             var kurirs = context.Users.Where(k => k.UserRoles.Any(o => o.RoleId == roleKurir.Id));
             return kurirs.AsQueryable();
         }
-
+        [Authorize(Roles = new[] { "MANAGER" })]
         public IQueryable<Courier> GetCourierProfiles([Service] FoodDeliveryContext context) =>
             context.Couriers.Select(p => new Courier()
             {

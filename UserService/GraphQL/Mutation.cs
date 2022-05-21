@@ -11,6 +11,7 @@ namespace UserService.GraphQL
 {
     public class Mutation
     {
+
         public async Task<UserData> RegisterUserAsync(
             RegisterUser input,
             [Service] FoodDeliveryContext context)
@@ -145,7 +146,6 @@ namespace UserService.GraphQL
             return await Task.FromResult(user);
         }
         [Authorize]
-
         public async Task<Profile> AddProfileAsync(
             ProfilesInput input,
             [Service] FoodDeliveryContext context)
